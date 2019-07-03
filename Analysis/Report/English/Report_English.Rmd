@@ -349,7 +349,7 @@ plot.ts(C6.data.N$COMPETITOR_PRICE, ylim = c( 510, 2800), xlim = c(0, length(C6.
 
 ```
 
-Notice that Figure \ref{fig:fig4} shows no differentiation between the diurnal and nocturnal, for all competitors.Therefore, henceforth no distinction will be made between these variables (that is, $C_i, i = 1, \cdots, 6$).
+Notice that Figure \ref{fig:fig4} shows no differentiation between the diurnal and nocturnal, for all competitors. Therefore, henceforth no distinction will be made between these variables (that is, $C_i, i = 1, \cdots, 6$).
 
 Next, Figure \ref{fig:fig4} shows the time series of clustered data by product id, date and time and then take the mean value of the prices, regardless the competitors.
 
