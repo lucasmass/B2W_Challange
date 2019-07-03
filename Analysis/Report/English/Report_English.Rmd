@@ -24,15 +24,15 @@ The below table shows the KPSS test results.
 \begin{center}
   \begin{tabular}{ c | c | c }
     Product ID & Test Statistic & $p$-value \\ \hline\hline
-    $P_1$      & $0,\!14$       & $ 0,\!07$ \\  
-    $P_2$      & $0,\!17$       & $ 0,\!02$ \\
-    $P_3$      & $0,\!53$       & $<0,\!01$ \\
-    $P_4$      & $0,\!04$       & $>0,\!10$ \\
-    $P_5$      & $0,\!26$       & $<0,\!01$ \\
-    $P_6$      & $0,\!08$       & $>0,\!10$ \\
-    $P_7$      & $0,\!42$       & $<0,\!01$ \\
-    $P_8$      & $0,\!09$       & $>0,\!10$ \\
-    $P_9$      & $0,\!06$       & $>0,\!10$ \\
+    $P_1$      & $0.14$       & $ 0.07$ \\  
+    $P_2$      & $0.17$       & $ 0.02$ \\
+    $P_3$      & $0.53$       & $<0.01$ \\
+    $P_4$      & $0.04$       & $>0.10$ \\
+    $P_5$      & $0.26$       & $<0.01$ \\
+    $P_6$      & $0.08$       & $>0.10$ \\
+    $P_7$      & $0.42$       & $<0.01$ \\
+    $P_8$      & $0.09$       & $>0.10$ \\
+    $P_9$      & $0.06$       & $>0.10$ \\
   \end{tabular}
 \end{center}
 
@@ -89,16 +89,16 @@ For all time series we use three prediction models: the linear autoregressive mo
 
 \begin{center}
   \begin{tabular}{ c | c | c | c }
-    Produto & ARIMA$(p,d,q)$                                    & ETS                                               & NNETAR$(p,k)$                                  \\ \hline\hline
-    $P_1$   & ARIMA$(1,1,1)$, $\widehat{\sigma_{e}} =  66,\!87$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0,\!04$ & NNETAR$(4,2)$, $\widehat{\sigma_{e}} = 0,\!04$ \\  
-    $P_2$   & ARIMA$(0,1,2)$, $\widehat{\sigma_{e}} =  32,\!21$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  33,\!56$ & NNETAR$(7,4)$, $\widehat{\sigma_{e}} = 0,\!04$ \\
-    $P_3$   & ARIMA$(2,1,3)$, $\widehat{\sigma_{e}} =  71,\!28$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  72,\!13$ & NNETAR$(7,4)$, $\widehat{\sigma_{e}} = 0,\!05$ \\
-    $P_4$   & ARIMA$(0,0,0)$, $\widehat{\sigma_{e}} = 436,\!59$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} = 437,\!72$ & NNETAR$(1,1)$, $\widehat{\sigma_{e}} = 0,\!22$ \\
-    $P_5$   & ARIMA$(0,1,1)$, $\widehat{\sigma_{e}} = 109,\!04$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0,\!11$ & NNETAR$(4,2)$, $\widehat{\sigma_{e}} = 0,\!08$ \\
-    $P_6$   & ARIMA$(5,1,0)$, $\widehat{\sigma_{e}} = 231,\!71$ & ETS$(M,A_d,N)$, $\widehat{\sigma_{e}} =   0,\!12$ & NNETAR$(6,4)$, $\widehat{\sigma_{e}} = 0,\!05$ \\
-    $P_7$   & ARIMA$(0,1,1)$, $\widehat{\sigma_{e}} =  34,\!35$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  34,\!37$ & NNETAR$(8,4)$, $\widehat{\sigma_{e}} = 0,\!03$ \\
-    $P_8$   & ARIMA$(2,1,1)$, $\widehat{\sigma_{e}} =  29,\!99$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0,\!05$ & NNETAR$(2,2)$, $\widehat{\sigma_{e}} = 0,\!03$ \\
-    $P_9$   & ARIMA$(1,1,1)$, $\widehat{\sigma_{e}} =  39,\!47$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0,\!08$ & NNETAR$(6,4)$, $\widehat{\sigma_{e}} = 0,\!06$ \\
+    Produto & ARIMA$(p,d,q)$                                  & ETS                                             & NNETAR$(p,k)$                                \\ \hline\hline
+    $P_1$   & ARIMA$(1,1,1)$, $\widehat{\sigma_{e}} =  66.87$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0.04$ & NNETAR$(4,2)$, $\widehat{\sigma_{e}} = 0.04$ \\  
+    $P_2$   & ARIMA$(0,1,2)$, $\widehat{\sigma_{e}} =  32.21$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  33.56$ & NNETAR$(7,4)$, $\widehat{\sigma_{e}} = 0.04$ \\
+    $P_3$   & ARIMA$(2,1,3)$, $\widehat{\sigma_{e}} =  71.28$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  72.13$ & NNETAR$(7,4)$, $\widehat{\sigma_{e}} = 0.05$ \\
+    $P_4$   & ARIMA$(0,0,0)$, $\widehat{\sigma_{e}} = 436.59$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} = 437.72$ & NNETAR$(1,1)$, $\widehat{\sigma_{e}} = 0.22$ \\
+    $P_5$   & ARIMA$(0,1,1)$, $\widehat{\sigma_{e}} = 109.04$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0.11$ & NNETAR$(4,2)$, $\widehat{\sigma_{e}} = 0.08$ \\
+    $P_6$   & ARIMA$(5,1,0)$, $\widehat{\sigma_{e}} = 231.71$ & ETS$(M,A_d,N)$, $\widehat{\sigma_{e}} =   0.12$ & NNETAR$(6,4)$, $\widehat{\sigma_{e}} = 0.05$ \\
+    $P_7$   & ARIMA$(0,1,1)$, $\widehat{\sigma_{e}} =  34.35$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  34.37$ & NNETAR$(8,4)$, $\widehat{\sigma_{e}} = 0.03$ \\
+    $P_8$   & ARIMA$(2,1,1)$, $\widehat{\sigma_{e}} =  29.99$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0.05$ & NNETAR$(2,2)$, $\widehat{\sigma_{e}} = 0.03$ \\
+    $P_9$   & ARIMA$(1,1,1)$, $\widehat{\sigma_{e}} =  39.47$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0.08$ & NNETAR$(6,4)$, $\widehat{\sigma_{e}} = 0.06$ \\
   \end{tabular}
 \end{center}
 
@@ -117,15 +117,15 @@ As a matter of fact, in the next table, note the decrease in value of \(\widehat
 \begin{center}
   \begin{tabular}{ c | c }
     Produto & NNETAR$(30,30)$                                \\ \hline\hline
-    $P_1$   & $\widehat{\sigma_{e}} = 2,\!67 \times 10^{-5}$ \\  
-    $P_2$   & $\widehat{\sigma_{e}} = 4,\!74 \times 10^{-5}$ \\
-    $P_3$   & $\widehat{\sigma_{e}} = 7,\!59 \times 10^{-5}$ \\
-    $P_4$   & $\widehat{\sigma_{e}} = 1,\!54 \times 10^{-4}$ \\
-    $P_5$   & $\widehat{\sigma_{e}} = 1,\!00 \times 10^{-4}$ \\
-    $P_6$   & $\widehat{\sigma_{e}} = 9,\!82 \times 10^{-3}$ \\
-    $P_7$   & $\widehat{\sigma_{e}} = 2,\!95 \times 10^{-4}$ \\
-    $P_8$   & $\widehat{\sigma_{e}} = 7,\!28 \times 10^{-5}$ \\
-    $P_9$   & $\widehat{\sigma_{e}} = 8,\!26 \times 10^{-5}$ \\
+    $P_1$   & $\widehat{\sigma_{e}} = 2.67 \times 10^{-5}$ \\  
+    $P_2$   & $\widehat{\sigma_{e}} = 4.74 \times 10^{-5}$ \\
+    $P_3$   & $\widehat{\sigma_{e}} = 7.59 \times 10^{-5}$ \\
+    $P_4$   & $\widehat{\sigma_{e}} = 1.54 \times 10^{-4}$ \\
+    $P_5$   & $\widehat{\sigma_{e}} = 1.00 \times 10^{-4}$ \\
+    $P_6$   & $\widehat{\sigma_{e}} = 9.82 \times 10^{-3}$ \\
+    $P_7$   & $\widehat{\sigma_{e}} = 2.95 \times 10^{-4}$ \\
+    $P_8$   & $\widehat{\sigma_{e}} = 7.28 \times 10^{-5}$ \\
+    $P_9$   & $\widehat{\sigma_{e}} = 8.26 \times 10^{-5}$ \\
   \end{tabular}
 \end{center}
 
@@ -472,7 +472,7 @@ par(new = TRUE)
 plot.ts(P9.data.N$COMPETITOR_PRICE, ylim = c( 400,  550), xlim = c(0, length(P9.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
 ```
 
-As can be seen, here there is no differentiation between the periods of the day and, therefore, to obtain only one series per product, the mean between the diurnal and nocturnal periods were used, in order to be able to forecast the prices as shown in Figure \ref{fig: fig5}.
+As can be seen, here there is no differentiation between the periods of the day and, therefore, to obtain only one series per product, the mean between the diurnal and nocturnal periods were used, in order to be able to forecast the prices as shown in Figure \ref{fig:fig5}.
 
 ```{r, echo = FALSE, fig.width = 7, fig.height = 6, fig.cap = "\\label{fig:fig5}Forecast of the average prices of the competitors' products for the next 30 days."}
    suppressPackageStartupMessages(library(fpp2))
@@ -543,54 +543,63 @@ P9.data.N <- subset(P9.data, P9.data$period == "N")
                 Y1 <- ts(P1.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P1.data.N$COMPETITOR_PRICE)
                 P1 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+               #P1 <- P1[1 : (length(P1) - 1)]
      fit.nnetar.P1 <- nnetar(P1, 30, 0, 30, lambda = 0)
    fcast.nnetar.P1 <- forecast(fit.nnetar.P1, PI = TRUE, h = 30)
 
                 Y1 <- ts(P2.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P2.data.N$COMPETITOR_PRICE)
                 P2 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+                #P2 <- P2[1 : (length(P2) - 1)]
      fit.nnetar.P2 <- nnetar(P2, 30, 0, 30, lambda = 0)
    fcast.nnetar.P2 <- forecast(fit.nnetar.P2, PI = TRUE, h = 30)
 
                 Y1 <- ts(P3.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P3.data.N$COMPETITOR_PRICE)
                 P3 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+                #P3 <- P3[1 : (length(P3) - 1)]
      fit.nnetar.P3 <- nnetar(P3, 30, 0, 30, lambda = 0)
    fcast.nnetar.P3 <- forecast(fit.nnetar.P3, PI = TRUE, h = 30)
 
                 Y1 <- ts(P4.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P4.data.N$COMPETITOR_PRICE)
                 P4 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+                P4 <- P4[1 : (length(P4) - 1)]
      fit.nnetar.P4 <- nnetar(P4, 30, 0, 30, lambda = 0)
    fcast.nnetar.P4 <- forecast(fit.nnetar.P4, PI = TRUE, h = 30)
 
                 Y1 <- ts(P5.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P5.data.N$COMPETITOR_PRICE)
                 P5 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+                P5 <- P5[1 : (length(P5) - 1)]
      fit.nnetar.P5 <- nnetar(P5, 30, 0, 30, lambda = 0)
    fcast.nnetar.P5 <- forecast(fit.nnetar.P5, PI = TRUE, h = 30)
 
                 Y1 <- ts(P6.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P6.data.N$COMPETITOR_PRICE)
                 P6 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+                P6 <- P6[1 : (length(P6) - 1)]
      fit.nnetar.P6 <- nnetar(P6, 30, 0, 30, lambda = 0)
    fcast.nnetar.P6 <- forecast(fit.nnetar.P6, PI = TRUE, h = 30)
 
                 Y1 <- ts(P7.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P7.data.N$COMPETITOR_PRICE)
                 P7 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+                P7 <- P7[1 : (length(P7) - 1)]
      fit.nnetar.P7 <- nnetar(P7, 30, 0, 30, lambda = 0)
    fcast.nnetar.P7 <- forecast(fit.nnetar.P7, PI = TRUE, h = 30)
 
                 Y1 <- ts(P8.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P8.data.N$COMPETITOR_PRICE)
                 P8 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+                P8 <- P8[1 : (length(P8) - 1)]
      fit.nnetar.P8 <- nnetar(P8, 30, 0, 30, lambda = 0)
    fcast.nnetar.P8 <- forecast(fit.nnetar.P8, PI = TRUE, h = 30)
 
                 Y1 <- ts(P9.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P9.data.N$COMPETITOR_PRICE)
                 P9 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+                P9 <- P9[1 : (length(P9) - 1)]
      fit.nnetar.P9 <- nnetar(P9, 30, 0, 30, lambda = 0)
    fcast.nnetar.P9 <- forecast(fit.nnetar.P9, PI = TRUE, h = 30)
 
@@ -612,15 +621,15 @@ As in the previous section, we used NNETAR$models(p,k)$, with $p = k = 30$ so th
 \begin{center}
   \begin{tabular}{ c | c }
     Produto & NNETAR$(30,30)$                                \\ \hline\hline
-    $P_1$   & $\widehat{\sigma_{e}} = 1,\!01 \times 10^{-3}$ \\  
-    $P_2$   & $\widehat{\sigma_{e}} = 4,\!05 \times 10^{-3}$ \\
-    $P_3$   & $\widehat{\sigma_{e}} = 4,\!03 \times 10^{-3}$ \\
-    $P_4$   & $\widehat{\sigma_{e}} = 5,\!61 \times 10^{-3}$ \\
-    $P_5$   & $\widehat{\sigma_{e}} = 5,\!77 \times 10^{-4}$ \\
-    $P_6$   & $\widehat{\sigma_{e}} = 1,\!29 \times 10^{-2}$ \\
-    $P_7$   & $\widehat{\sigma_{e}} = 8,\!92 \times 10^{-3}$ \\
-    $P_8$   & $\widehat{\sigma_{e}} = 5,\!19 \times 10^{-3}$ \\
-    $P_9$   & $\widehat{\sigma_{e}} = 5,\!37 \times 10^{-3}$ \\
+    $P_1$   & $\widehat{\sigma_{e}} = 1.01 \times 10^{-3}$ \\  
+    $P_2$   & $\widehat{\sigma_{e}} = 4.05 \times 10^{-3}$ \\
+    $P_3$   & $\widehat{\sigma_{e}} = 4.03 \times 10^{-3}$ \\
+    $P_4$   & $\widehat{\sigma_{e}} = 5.61 \times 10^{-3}$ \\
+    $P_5$   & $\widehat{\sigma_{e}} = 5.77 \times 10^{-4}$ \\
+    $P_6$   & $\widehat{\sigma_{e}} = 1.29 \times 10^{-2}$ \\
+    $P_7$   & $\widehat{\sigma_{e}} = 8.92 \times 10^{-3}$ \\
+    $P_8$   & $\widehat{\sigma_{e}} = 5.19 \times 10^{-3}$ \\
+    $P_9$   & $\widehat{\sigma_{e}} = 5.37 \times 10^{-3}$ \\
   \end{tabular}
 \end{center}
 
