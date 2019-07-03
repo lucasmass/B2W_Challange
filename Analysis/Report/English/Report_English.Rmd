@@ -129,7 +129,7 @@ As a matter of fact, in the next table, note the decrease in value of \(\widehat
   \end{tabular}
 \end{center}
 
-Figure \ref{fig:fig2} illustrate the forecast produced by the NNETAR$(24,24)$ models for the products revenues.
+Figure \ref{fig:fig2} illustrate the forecast produced by the NNETAR$(30,30)$ models for the products revenues.
 
 ```{r, echo = FALSE, fig.width = 7, fig.height = 6, fig.cap = "\\label{fig:fig2}Product revenue forecast for the next 30 days."}
    suppressPackageStartupMessages(library(fpp2))
