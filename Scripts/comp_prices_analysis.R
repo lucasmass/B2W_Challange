@@ -243,14 +243,14 @@ plot.ts(P9.data.N$COMPETITOR_PRICE, ylim = c( 400,  550), xlim = c(0, length(P9.
 # Data preparation to forecasting procedure
 
 # Declare as time series data
-Y1 <- ts(P1.data.D$COMPETITOR_PRICE)
-Y2 <- ts(P1.data.N$COMPETITOR_PRICE)
+Y1 <- ts(P9.data.D$COMPETITOR_PRICE)
+Y2 <- ts(P9.data.N$COMPETITOR_PRICE)
 # Time series of the mean value between the dianurnal and nocturnal series
 Y  <- cbind(Y1, Y2) %>% 
   rowMeans() %>% 
   na.omit() %>% 
   ts()
-(fit.nnetar <- nnetar(Y, 24, 0, 24, lambda = 0))
+
 ##################################################
 # Preliminary Analysis for the Forecast
 ##################################################
@@ -300,7 +300,7 @@ checkresiduals(fit_ets)
 # Fit a NNTEAR(p,k) (p lagged inputs and k nodes in the hidden layer)
 ##################################################
 
-(fit.nnetar <- nnetar(Y, 24, 0, 24, lambda = 0))
+(fit.nnetar <- nnetar(Y, 30, 0, 30, lambda = 0))
 
 ##################################################
 # Forecast with NNETAR

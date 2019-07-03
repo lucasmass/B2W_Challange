@@ -80,7 +80,7 @@ plot.ts(P9.data$REVENUE, xlim = c(0, length(P9.data$REVENUE)), col = "blue", yla
 # Data preparation to forecasting procedure
 
 # Declare as time series data
-Y <- ts(P1.data$REVENUE)
+Y <- ts(P9.data$REVENUE)
 
 ##################################################
 # Preliminary Analysis for the Forecast
@@ -131,7 +131,7 @@ checkresiduals(fit_ets)
 # Fit a NNTEAR(p,k) (p lagged inputs and k nodes in the hidden layer)
 ##################################################
 
-(fit.nnetar <- nnetar(Y, 24, 0, 24, lambda = 0))
+(fit.nnetar <- nnetar(Y, 30, 0, 30, lambda = 0))
 
 ##################################################
 # Forecast with NNETAR

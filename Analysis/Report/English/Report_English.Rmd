@@ -1,0 +1,635 @@
+---
+title: "Report"
+author: "Lucas Massaroppe"
+date: "06/28/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## B2W Challenge
+
+In this challenge two databases were considered: (a) 'sales.csv' and (b) 'comp_prices.csv'. In (a) there is transactional information of nine products $P_i, i = 1, \ cdots, 9$ for the year of 2015 and in (b), contains data from six competitors $C_i, i=1,\cdots,6$, monitored at different times, for the same dates and products of the data set.
+
+At first, we will analyze 'sales.csv' and, in a second step, we will pay attention to 'comp_prices.csv', so that we can thus make a comparison between the transactional information and the prices of the competitors.
+
+# The 'sales.csv' data set
+
+As a quick check the time series of the nine products are depicted in Figure \ref{fig:fig1}, in such a way that we can perform the KPSS test on each to access the trend-stationarity null hypothesis of them.
+
+The below table shows the KPSS test results.
+
+\begin{center}
+  \begin{tabular}{ c | c | c }
+    Product ID & Test Statistic & $p$-value \\ \hline\hline
+    $P_1$      & $0,\!14$       & $ 0,\!07$ \\  
+    $P_2$      & $0,\!17$       & $ 0,\!02$ \\
+    $P_3$      & $0,\!53$       & $<0,\!01$ \\
+    $P_4$      & $0,\!04$       & $>0,\!10$ \\
+    $P_5$      & $0,\!26$       & $<0,\!01$ \\
+    $P_6$      & $0,\!08$       & $>0,\!10$ \\
+    $P_7$      & $0,\!42$       & $<0,\!01$ \\
+    $P_8$      & $0,\!09$       & $>0,\!10$ \\
+    $P_9$      & $0,\!06$       & $>0,\!10$ \\
+  \end{tabular}
+\end{center}
+
+Note that, according to the null hypothesis of the KPSS test and using a significance level of $\alpha = 1\%$, products with $p < \alpha$ is stationary, that is, $P_3$, $P_5$ and $P_7$.
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 6, fig.cap = "\\label{fig:fig1}Products revenue"}
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(tseries))
+suppressPackageStartupMessages(library(magrittr))
+suppressPackageStartupMessages(library(dplyr))
+
+# Reading CSV file
+data.sales <- read.csv(file = "./sales.csv",
+                        head = TRUE, 
+                        dec = ".", 
+                        sep = ",", 
+                        na.strings = "")
+
+# Date as charecter string
+datime <- as.character(data.sales$DATE_ORDER)
+
+# Order the data by product id and date and then take the mean value of the prices (revenue), regarding products quantity
+ordered_data <- data.sales %>% 
+  group_by(PROD_ID, DATE_ORDER) %>% 
+  summarise(REVENUE = mean(REVENUE)) 
+
+# Separate the products time series, regardless the payment type and the competitors
+P1.data <- subset(ordered_data, ordered_data$PROD_ID == "P1")
+P2.data <- subset(ordered_data, ordered_data$PROD_ID == "P2")
+P3.data <- subset(ordered_data, ordered_data$PROD_ID == "P3")
+P4.data <- subset(ordered_data, ordered_data$PROD_ID == "P4")
+P5.data <- subset(ordered_data, ordered_data$PROD_ID == "P5")
+P6.data <- subset(ordered_data, ordered_data$PROD_ID == "P6")
+P7.data <- subset(ordered_data, ordered_data$PROD_ID == "P7")
+P8.data <- subset(ordered_data, ordered_data$PROD_ID == "P8")
+P9.data <- subset(ordered_data, ordered_data$PROD_ID == "P9")
+
+# Plot the time series to a quick check
+par(mfrow = c(3, 3))
+plot.ts(P1.data$REVENUE, xlim = c(0, length(P1.data$REVENUE)), col = "blue", ylab = "", main = "P1 Revenue")
+plot.ts(P2.data$REVENUE, xlim = c(0, length(P2.data$REVENUE)), col = "blue", ylab = "", main = "P2 Revenue")
+plot.ts(P3.data$REVENUE, xlim = c(0, length(P3.data$REVENUE)), col = "blue", ylab = "", main = "P3 Revenue")
+plot.ts(P4.data$REVENUE, xlim = c(0, length(P4.data$REVENUE)), col = "blue", ylab = "", main = "P4 Revenue")
+plot.ts(P5.data$REVENUE, xlim = c(0, length(P5.data$REVENUE)), col = "blue", ylab = "", main = "P5 Revenue")
+plot.ts(P6.data$REVENUE, xlim = c(0, length(P6.data$REVENUE)), col = "blue", ylab = "", main = "P6 Revenue")
+plot.ts(P7.data$REVENUE, xlim = c(0, length(P7.data$REVENUE)), col = "blue", ylab = "", main = "P7 Revenue")
+plot.ts(P8.data$REVENUE, xlim = c(0, length(P8.data$REVENUE)), col = "blue", ylab = "", main = "P8 Revenue")
+plot.ts(P9.data$REVENUE, xlim = c(0, length(P9.data$REVENUE)), col = "blue", ylab = "", main = "P9 Revenue")
+```
+
+# Product revenue 30 day forecast
+
+For all time series we use three prediction models: the linear autoregressive moving average (ARIMA$(p,d,q)$), the nonlinear exponential smoothing (ETS) and the autoregressive neural network (NNETAR$(p,k)$). To evaluate the best model among them, we used the standard deviation of the residuals as a mesure of comparison and we show in the following table.
+
+\begin{center}
+  \begin{tabular}{ c | c | c | c }
+    Produto & ARIMA$(p,d,q)$                                    & ETS                                               & NNETAR$(p,k)$                                  \\ \hline\hline
+    $P_1$   & ARIMA$(1,1,1)$, $\widehat{\sigma_{e}} =  66,\!87$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0,\!04$ & NNETAR$(4,2)$, $\widehat{\sigma_{e}} = 0,\!04$ \\  
+    $P_2$   & ARIMA$(0,1,2)$, $\widehat{\sigma_{e}} =  32,\!21$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  33,\!56$ & NNETAR$(7,4)$, $\widehat{\sigma_{e}} = 0,\!04$ \\
+    $P_3$   & ARIMA$(2,1,3)$, $\widehat{\sigma_{e}} =  71,\!28$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  72,\!13$ & NNETAR$(7,4)$, $\widehat{\sigma_{e}} = 0,\!05$ \\
+    $P_4$   & ARIMA$(0,0,0)$, $\widehat{\sigma_{e}} = 436,\!59$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} = 437,\!72$ & NNETAR$(1,1)$, $\widehat{\sigma_{e}} = 0,\!22$ \\
+    $P_5$   & ARIMA$(0,1,1)$, $\widehat{\sigma_{e}} = 109,\!04$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0,\!11$ & NNETAR$(4,2)$, $\widehat{\sigma_{e}} = 0,\!08$ \\
+    $P_6$   & ARIMA$(5,1,0)$, $\widehat{\sigma_{e}} = 231,\!71$ & ETS$(M,A_d,N)$, $\widehat{\sigma_{e}} =   0,\!12$ & NNETAR$(6,4)$, $\widehat{\sigma_{e}} = 0,\!05$ \\
+    $P_7$   & ARIMA$(0,1,1)$, $\widehat{\sigma_{e}} =  34,\!35$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  34,\!37$ & NNETAR$(8,4)$, $\widehat{\sigma_{e}} = 0,\!03$ \\
+    $P_8$   & ARIMA$(2,1,1)$, $\widehat{\sigma_{e}} =  29,\!99$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0,\!05$ & NNETAR$(2,2)$, $\widehat{\sigma_{e}} = 0,\!03$ \\
+    $P_9$   & ARIMA$(1,1,1)$, $\widehat{\sigma_{e}} =  39,\!47$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0,\!08$ & NNETAR$(6,4)$, $\widehat{\sigma_{e}} = 0,\!06$ \\
+  \end{tabular}
+\end{center}
+
+Therefore, from the previous table, it is possible to conclude that the best model in all cases is the NNETAR$(p,k)$, since
+\[\widehat{\sigma_{e}}_{\mbox{NNETAR$(p,k)$}} < \widehat{\sigma_{e}}_{\mbox{ETS}} < \widehat{\sigma_{e}}_{\mbox{ARIMA$(p,d,q)$}},\]
+where the model NNETAR$(p,k)$ can be written as follows,
+\[ x(n) = f \left( \sum_{r=1}^{p} \boldsymbol{\Phi}_{r} \mathbf{x}(n-r) \right) + e(n), \]
+in which, $\mathbf{x}(n-r)$ is a $k \times 1$ input vector, $\boldsymbol{\Phi}_{r}$ is a $k \times k$ of synaptic weights (parameter) matrix, $k$ is the number of network hidden layers, $f(\cdot)$ is the activation function (sigmoid) and $e(n)$ independent, identically, distributed process (i.i.d.) with null mean and variance $\sigma_{e}^{2}$ ($\{e(n)\}_{n \in \mathbb{Z}} \sim$ i.i.d.$(0, \sigma_e^2)$).
+
+However, previous candidate experience of manipulating annual data and NNETAR$(p,k)$ models indicates the necessity of a fine tuning procedure of the parameters $p$ and $k$ for the products $P_i, i = 1, \ cdots , 9$, such that the new models are capable of capturing the nonlinear dynamics of the processes and possible other effects treated below.
+
+As we are dealing with daily data and despite the apparent lack of seasonality in the graphs of Figure \ref{fig:fig1}, the parameters $p = k = 30$ are imposed on the neural network, so that it is able to capture the monthly variation and the nature of the nonlinear dynamics of the data.
+ 
+As a matter of fact, in the next table, note the decrease in value of \(\widehat{\sigma_{e}}_{\mbox{NNETAR$(p,k)$}}\)  in all cases.
+
+\begin{center}
+  \begin{tabular}{ c | c }
+    Produto & NNETAR$(30,30)$                                \\ \hline\hline
+    $P_1$   & $\widehat{\sigma_{e}} = 2,\!67 \times 10^{-5}$ \\  
+    $P_2$   & $\widehat{\sigma_{e}} = 4,\!74 \times 10^{-5}$ \\
+    $P_3$   & $\widehat{\sigma_{e}} = 7,\!59 \times 10^{-5}$ \\
+    $P_4$   & $\widehat{\sigma_{e}} = 1,\!54 \times 10^{-4}$ \\
+    $P_5$   & $\widehat{\sigma_{e}} = 1,\!00 \times 10^{-4}$ \\
+    $P_6$   & $\widehat{\sigma_{e}} = 9,\!82 \times 10^{-3}$ \\
+    $P_7$   & $\widehat{\sigma_{e}} = 2,\!95 \times 10^{-4}$ \\
+    $P_8$   & $\widehat{\sigma_{e}} = 7,\!28 \times 10^{-5}$ \\
+    $P_9$   & $\widehat{\sigma_{e}} = 8,\!26 \times 10^{-5}$ \\
+  \end{tabular}
+\end{center}
+
+Figure \ref{fig:fig2} illustrate the forecast produced by the NNETAR$(24,24)$ models for the products revenues.
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 6, fig.cap = "\\label{fig:fig2}Product revenue forecast for the next 30 days."}
+   suppressPackageStartupMessages(library(fpp2))
+   suppressPackageStartupMessages(library(gridExtra))
+ 
+   # Reading CSV file
+   data.sales <- read.csv(file = "./sales.csv",
+                           head = TRUE,
+                           dec = ".",
+                           sep = ",",
+                           na.strings = "")
+   # Date as charecter string# datime <- as.character(data.sales$DATE_ORDER)#
+   # Order the data by product id and date and then take the mean value of the prices (revenue), regarding products quantity
+   ordered_data <- data.sales %>%
+     group_by(PROD_ID, DATE_ORDER) %>%
+     summarise(REVENUE = mean(REVENUE))
+ 
+                P1 <- ts(P1.data$REVENUE)
+     fit.nnetar.P1 <- nnetar(P1, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P1 <- forecast(fit.nnetar.P1, PI = TRUE, h = 30)
+ 
+                P2 <- ts(P2.data$REVENUE)
+     fit.nnetar.P2 <- nnetar(P2, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P2 <- forecast(fit.nnetar.P2, PI = TRUE, h = 30)
+ 
+                P3 <- ts(P3.data$REVENUE)
+     fit.nnetar.P3 <- nnetar(P3, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P3 <- forecast(fit.nnetar.P3, PI = TRUE, h = 30)
+ 
+                P4 <- ts(P4.data$REVENUE)
+     fit.nnetar.P4 <- nnetar(P4, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P4 <- forecast(fit.nnetar.P4, PI = TRUE, h = 30)
+ 
+                P5 <- ts(P5.data$REVENUE)
+     fit.nnetar.P5 <- nnetar(P5, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P5 <- forecast(fit.nnetar.P5, PI = TRUE, h = 30)
+ 
+                P6 <- ts(P6.data$REVENUE)
+     fit.nnetar.P6 <- nnetar(P6, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P6 <- forecast(fit.nnetar.P6, PI = TRUE, h = 30)
+ 
+                P7 <- ts(P7.data$REVENUE)
+     fit.nnetar.P7 <- nnetar(P7, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P7 <- forecast(fit.nnetar.P7, PI = TRUE, h = 30)
+ 
+                P8 <- ts(P8.data$REVENUE)
+     fit.nnetar.P8 <- nnetar(P8, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P8 <- forecast(fit.nnetar.P8, PI = TRUE, h = 30)
+ 
+                P9 <- ts(P9.data$REVENUE)
+     fit.nnetar.P9 <- nnetar(P9, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P9 <- forecast(fit.nnetar.P9, PI = TRUE, h = 30)
+ 
+   #par(mfrow = c(3, 3))
+   p1 <- autoplot(fcast.nnetar.P1, include = 20) + ggtitle("")
+   p2 <- autoplot(fcast.nnetar.P2, include = 20) + ggtitle("")
+   p3 <- autoplot(fcast.nnetar.P3, include = 20) + ggtitle("")
+   p4 <- autoplot(fcast.nnetar.P4, include = 20) + ggtitle("")
+   p5 <- autoplot(fcast.nnetar.P5, include = 20) + ggtitle("")
+   p6 <- autoplot(fcast.nnetar.P6, include = 20) + ggtitle("")
+   p7 <- autoplot(fcast.nnetar.P7, include = 20) + ggtitle("")
+   p8 <- autoplot(fcast.nnetar.P8, include = 20) + ggtitle("")
+   p9 <- autoplot(fcast.nnetar.P9, include = 20) + ggtitle("")
+   grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, nrow = 3)
+```
+
+In the following section the case for competitors' data is shown.
+
+# The 'comp_prices.cs' data set
+
+For the database 'comp_prices.cs' it was necessary to realize a reduction of dimensionality.
+
+First, we groupped the data by payment type, product id, date and time and then take the mean value of the prices, regardless the competitors and products. Graphs in Figure \ref{fig:fig3} shows that there are no differences between neither dianurnal (12am --- 12pm, blue line) nor nocturnal (12pm --- 12am, red line) period of the day, and payment type and, thus, can be classified as independent variables.
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 6, fig.cap = "\\label{fig:fig3}Payment type divide by period of the day: dianurnal (blue line) and nocturnal (red line)."}
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(tseries))
+suppressPackageStartupMessages(library(magrittr))
+suppressPackageStartupMessages(library(dplyr))
+
+# Reading CSV file
+data.comp  <- read.csv(file = "comp_prices.csv", 
+                       head = TRUE, 
+                       dec = ".", 
+                       sep = ",", 
+                       na.strings = "")
+
+# Separate date and time, from DATE_EXTRACTION variable
+datime <- do.call(rbind, strsplit(as.character(data.comp$DATE_EXTRACTION), " "))
+
+##################################################
+# Dimensionality reduction
+##################################################
+
+###
+### Investigating the importance of PAY_TYPE variable
+###
+
+# Group the data by payment type, product id, date and time and then take the mean value of the prices, regardless the competitors and products
+ordered_data_pay <- data.comp %>% 
+  group_by(PAY_TYPE, DATE_ORDER = datime[,1], HOUR_ORDER = datime[,2]) %>% 
+  summarise(COMPETITOR_PRICE =  mean(COMPETITOR_PRICE))
+
+# Order the data by period of the day: nocturnal (N --- 12pm -- 12am) and diurnal (D --- 12am -- 12pm)
+ordered_data_pay$period <- rep("N", nrow(ordered_data_pay))
+ordered_data_pay$period[ordered_data_pay$HOUR_ORDER < '12:00'] <- "D"
+
+# Separate the payment type time series, regardless the competitors and products
+PAY1.data   <- subset(ordered_data_pay, ordered_data_pay$PAY_TYPE == 1)
+PAY1.data.D <- subset(PAY1.data, PAY1.data$period == "D")
+PAY1.data.N <- subset(PAY1.data, PAY1.data$period == "N")
+
+PAY2.data   <- subset(ordered_data_pay, ordered_data_pay$PAY_TYPE == 2)
+PAY2.data.D <- subset(PAY2.data, PAY2.data$period == "D")
+PAY2.data.N <- subset(PAY2.data, PAY2.data$period == "N")
+
+# Plot the time series to a quick check if the diurnal (D) or nocturnal (N) periods are too different from each other
+par(mfrow = c(2, 1))
+
+plot.ts(PAY1.data.D$COMPETITOR_PRICE, ylim = c( 690, 1900), xlim = c(0, length(PAY1.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "Deferred Payment")
+par(new = TRUE)
+plot.ts(PAY1.data.N$COMPETITOR_PRICE, ylim = c( 690, 1900), xlim = c(0, length(PAY1.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(PAY2.data.D$COMPETITOR_PRICE, ylim = c( 690, 1900), xlim = c(0, length(PAY2.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "Immediate Payment")
+par(new = TRUE)
+plot.ts(PAY2.data.N$COMPETITOR_PRICE, ylim = c( 690, 1900), xlim = c(0, length(PAY2.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+```
+
+Now to investigate the importance of each competitor, we clustered the information by competitor, date and time and then take the mean value of the prices, regardless the competitors and product id, obtaining Figure \ref{fig:fig4}.
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 6, fig.cap = "\\label{fig:fig4}Prices due to competitors and diurnal (blue line) and nocturnal (red line) periods."}
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(tseries))
+suppressPackageStartupMessages(library(magrittr))
+suppressPackageStartupMessages(library(dplyr))
+
+suppressPackageStartupMessages(library("GGally"))
+
+# Reading CSV file
+data.comp  <- read.csv(file = "comp_prices.csv", 
+                       head = TRUE, 
+                       dec = ".", 
+                       sep = ",", 
+                       na.strings = "")
+
+# Separate date and time, from DATE_EXTRACTION variable
+datime <- do.call(rbind, strsplit(as.character(data.comp$DATE_EXTRACTION), " "))
+
+##################################################
+# Dimensionality reduction
+##################################################
+
+###
+### Investigating the importance of COMPETITOR variable
+###
+
+# Group the data by competitor, date and time and then take the mean value of the prices, regardless the competitors and product id
+ordered_data_comp <- data.comp %>% 
+  group_by(COMPETITOR, DATE_ORDER = datime[,1], HOUR_ORDER = datime[,2]) %>% 
+  summarise(COMPETITOR_PRICE =  mean(COMPETITOR_PRICE))
+
+# Order the data by period of the day: nocturnal (N --- 12pm -- 12am) and diurnal (D --- 12am -- 12pm)
+ordered_data_comp$period <- rep("N", nrow(ordered_data_comp))
+ordered_data_comp$period[ordered_data_comp$HOUR_ORDER < '12:00'] <- "D"
+
+# Separate the competitors time series, regardless the payment type and the products
+C1.data   <- subset(ordered_data_comp, ordered_data_comp$COMPETITOR == "C1")
+C1.data.D <- subset(C1.data, C1.data$period == "D")
+C1.data.N <- subset(C1.data, C1.data$period == "N")
+
+C2.data   <- subset(ordered_data_comp, ordered_data_comp$COMPETITOR == "C2")
+C2.data.D <- subset(C2.data, C2.data$period == "D")
+C2.data.N <- subset(C2.data, C2.data$period == "N")
+
+C3.data   <- subset(ordered_data_comp, ordered_data_comp$COMPETITOR == "C3")
+C3.data.D <- subset(C3.data, C3.data$period == "D")
+C3.data.N <- subset(C3.data, C3.data$period == "N")
+
+C4.data   <- subset(ordered_data_comp, ordered_data_comp$COMPETITOR == "C4")
+C4.data.D <- subset(C4.data, C4.data$period == "D")
+C4.data.N <- subset(C4.data, C4.data$period == "N")
+
+C5.data   <- subset(ordered_data_comp, ordered_data_comp$COMPETITOR == "C5")
+C5.data.D <- subset(C5.data, C5.data$period == "D")
+C5.data.N <- subset(C5.data, C5.data$period == "N")
+
+C6.data   <- subset(ordered_data_comp, ordered_data_comp$COMPETITOR == "C6")
+C6.data.D <- subset(C6.data, C6.data$period == "D")
+C6.data.N <- subset(C6.data, C6.data$period == "N")
+
+# Plot the time series to a quick check if the diurnal (D) or nocturnal (N) periods are too different from each other
+par(mfrow = c(2, 3))
+
+plot.ts(C1.data.D$COMPETITOR_PRICE, ylim = c( 550, 2400), xlim = c(0, length(C1.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "C1 Mean Price")
+par(new = TRUE)
+plot.ts(C1.data.N$COMPETITOR_PRICE, ylim = c( 550, 2400), xlim = c(0, length(C1.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(C2.data.D$COMPETITOR_PRICE, ylim = c( 570, 2200), xlim = c(0, length(C2.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "C2 Mean Price")
+par(new = TRUE)
+plot.ts(C2.data.N$COMPETITOR_PRICE, ylim = c( 570, 2200), xlim = c(0, length(C2.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(C3.data.D$COMPETITOR_PRICE, ylim = c( 450, 2000), xlim = c(0, length(C3.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "C3 Mean Price")
+par(new = TRUE)
+plot.ts(C3.data.N$COMPETITOR_PRICE, ylim = c( 450, 2000), xlim = c(0, length(C3.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(C4.data.D$COMPETITOR_PRICE, ylim = c( 420, 1600), xlim = c(0, length(C4.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "C4 Mean Price")
+par(new = TRUE)
+plot.ts(C4.data.N$COMPETITOR_PRICE, ylim = c( 420, 1600), xlim = c(0, length(C4.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(C5.data.D$COMPETITOR_PRICE, ylim = c( 450, 1550), xlim = c(0, length(C5.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "C5 Mean Price")
+par(new = TRUE)
+plot.ts(C5.data.N$COMPETITOR_PRICE, ylim = c( 450, 1550), xlim = c(0, length(C5.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(C6.data.D$COMPETITOR_PRICE, ylim = c( 510, 2800), xlim = c(0, length(C6.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "C6 Mean Price")
+par(new = TRUE)
+plot.ts(C6.data.N$COMPETITOR_PRICE, ylim = c( 510, 2800), xlim = c(0, length(C6.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+```
+
+Noticed that Figure \ref{fig:fig4} shows no differentiation between the diurnal and nocturnal, for all competitors.Therefore, henceforth no distinction will be made between these variables (that is, $C_i, i = 1, \ cdots, 6$).
+
+Next, Figure \ref{fig:fig4} shows the time series of clustered data by product id, date and time and then take the mean value of the prices, regardless the competitors.
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 6, fig.cap = "\\label{fig:fig4}Competitors products time series, showing the diurnal (blue line) and nocturnal (red line) periods."}
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(tseries))
+suppressPackageStartupMessages(library(magrittr))
+suppressPackageStartupMessages(library(dplyr))
+
+suppressPackageStartupMessages(library("GGally"))
+
+# Reading CSV file
+data.comp  <- read.csv(file = "comp_prices.csv", 
+                       head = TRUE, 
+                       dec = ".", 
+                       sep = ",", 
+                       na.strings = "")
+
+# Separate date and time, from DATE_EXTRACTION variable
+datime <- do.call(rbind, strsplit(as.character(data.comp$DATE_EXTRACTION), " "))
+
+##################################################
+# Dimensionality reduction
+##################################################
+
+###
+### Investigating the importance of COMPETITOR variable
+###
+
+###
+### As the aforementioned analysis tells us the variables PAY_TYPE and COMPETITOR are not that different
+### during the defined diurnal shift (D --- 12am - 12pm) and nocturnal (N --- 12pm - 12am)
+### Therefore, as a grouping variable we will use PROD_ID, regardless PAY_TYPE and COMPETITORS variables
+###
+
+# Group the data by product id, date and time and then take the mean value of the prices, regardless the competitors
+ordered_data <- data.comp %>% 
+  group_by(PROD_ID, DATE_ORDER = datime[,1], HOUR_ORDER = datime[,2]) %>% 
+  summarise(COMPETITOR_PRICE =  mean(COMPETITOR_PRICE))
+
+# Order the data by period of the day: nocturnal (N --- 12pm - 12am) and diurnal (D --- 12am - 12pm)
+ordered_data$period <- rep("N", nrow(ordered_data))
+ordered_data$period[ordered_data$HOUR_ORDER < '12:00'] <- "D"
+
+# Separate the products time series, regardless the payment type and the competitors
+P1.data   <- subset(ordered_data, ordered_data$PROD_ID == "P1")
+P1.data.D <- subset(P1.data, P1.data$period == "D")
+P1.data.N <- subset(P1.data, P1.data$period == "N")
+
+P2.data   <- subset(ordered_data, ordered_data$PROD_ID == "P2")
+P2.data.D <- subset(P2.data, P2.data$period == "D")
+P2.data.N <- subset(P2.data, P2.data$period == "N")
+
+P3.data   <- subset(ordered_data, ordered_data$PROD_ID == "P3")
+P3.data.D <- subset(P3.data, P3.data$period == "D")
+P3.data.N <- subset(P3.data, P3.data$period == "N")
+
+P4.data   <- subset(ordered_data, ordered_data$PROD_ID == "P4")
+P4.data.D <- subset(P4.data, P4.data$period == "D")
+P4.data.N <- subset(P4.data, P4.data$period == "N")
+
+P5.data   <- subset(ordered_data, ordered_data$PROD_ID == "P5")
+P5.data.D <- subset(P5.data, P5.data$period == "D")
+P5.data.N <- subset(P5.data, P5.data$period == "N")
+
+P6.data   <- subset(ordered_data, ordered_data$PROD_ID == "P6")
+P6.data.D <- subset(P6.data, P6.data$period == "D")
+P6.data.N <- subset(P6.data, P6.data$period == "N")
+
+P7.data   <- subset(ordered_data, ordered_data$PROD_ID == "P7")
+P7.data.D <- subset(P7.data, P7.data$period == "D")
+P7.data.N <- subset(P7.data, P7.data$period == "N")
+
+P8.data   <- subset(ordered_data, ordered_data$PROD_ID == "P8")
+P8.data.D <- subset(P8.data, P8.data$period == "D")
+P8.data.N <- subset(P8.data, P8.data$period == "N")
+
+P9.data   <- subset(ordered_data, ordered_data$PROD_ID == "P9")
+P9.data.D <- subset(P9.data, P9.data$period == "D")
+P9.data.N <- subset(P9.data, P9.data$period == "N")
+
+# Plot the time series to a quick check if the diurnal (D) or nocturnal (N) periods are too different from each other
+# If not, just take the mean value between the series and forecast them
+par(mfrow = c(3, 3))
+
+plot.ts(P1.data.D$COMPETITOR_PRICE, ylim = c(1000, 2000), xlim = c(0, length(P1.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P1 Mean Price")
+par(new = TRUE)
+plot.ts(P1.data.N$COMPETITOR_PRICE, ylim = c(1000, 2000), xlim = c(0, length(P1.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(P2.data.D$COMPETITOR_PRICE, ylim = c( 600,  850), xlim = c(0, length(P2.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P2 Mean Price")
+par(new = TRUE)
+plot.ts(P2.data.N$COMPETITOR_PRICE, ylim = c( 600,  850), xlim = c(0, length(P2.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(P3.data.D$COMPETITOR_PRICE, ylim = c( 880, 1500), xlim = c(0, length(P3.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P3 Mean Price")
+par(new = TRUE)
+plot.ts(P3.data.N$COMPETITOR_PRICE, ylim = c( 880, 1500), xlim = c(0, length(P3.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(P4.data.D$COMPETITOR_PRICE, ylim = c( 400,  700), xlim = c(0, length(P4.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P4 Mean Price")
+par(new = TRUE)
+plot.ts(P4.data.N$COMPETITOR_PRICE, ylim = c( 400,  700), xlim = c(0, length(P4.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(P5.data.D$COMPETITOR_PRICE, ylim = c( 700, 1100), xlim = c(0, length(P5.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P5 Mean Price")
+par(new = TRUE)
+plot.ts(P5.data.N$COMPETITOR_PRICE, ylim = c( 700, 1100), xlim = c(0, length(P5.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(P6.data.D$COMPETITOR_PRICE, ylim = c(1400, 2400), xlim = c(0, length(P6.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P6 Mean Price")
+par(new = TRUE)
+plot.ts(P6.data.N$COMPETITOR_PRICE, ylim = c(1400, 2400), xlim = c(0, length(P6.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(P7.data.D$COMPETITOR_PRICE, ylim = c( 680, 1000), xlim = c(0, length(P7.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P7 Mean Price")
+par(new = TRUE)
+plot.ts(P7.data.N$COMPETITOR_PRICE, ylim = c( 680, 1000), xlim = c(0, length(P7.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(P8.data.D$COMPETITOR_PRICE, ylim = c( 380,  550), xlim = c(0, length(P8.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P8 Mean Price")
+par(new = TRUE)
+plot.ts(P8.data.N$COMPETITOR_PRICE, ylim = c( 380,  550), xlim = c(0, length(P8.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+
+plot.ts(P9.data.D$COMPETITOR_PRICE, ylim = c( 400,  550), xlim = c(0, length(P9.data.D$COMPETITOR_PRICE)), col = "blue", ylab = "P9 Mean Price")
+par(new = TRUE)
+plot.ts(P9.data.N$COMPETITOR_PRICE, ylim = c( 400,  550), xlim = c(0, length(P9.data.D$COMPETITOR_PRICE)), col = "red",  ylab = "")
+```
+
+As can be seen, here there is no differentiation between the periods of the day and, therefore, to obtain only one series per product, the mean between the diurnal and nocturnal periods were used, in order to be able to forecast the prices as shown in Figure \ref{fig: fig5}.
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 6, fig.cap = "\\label{fig:fig5}Forecast of the average prices of the competitors' products for the next 30 days."}
+   suppressPackageStartupMessages(library(fpp2))
+   suppressPackageStartupMessages(library(gridExtra))
+
+   # Reading CSV file
+data.comp  <- read.csv(file = "comp_prices.csv", 
+                        head = TRUE, 
+                        dec = ".", 
+                        sep = ",", 
+                        na.strings = "")
+
+# Separate date and time, from DATE_EXTRACTION variable
+datime <- do.call(rbind, strsplit(as.character(data.comp$DATE_EXTRACTION), " "))
+
+# Group the data by product id, date and time and then take the mean value of the prices, regardless the competitors
+ordered_data <- data.comp %>% 
+  group_by(PROD_ID, DATE_ORDER = datime[,1], HOUR_ORDER = datime[,2]) %>% 
+  summarise(COMPETITOR_PRICE =  mean(COMPETITOR_PRICE))
+
+# Order the data by period of the day: nocturnal (N --- 12pm - 12am) and diurnal (D --- 12am - 12pm)
+ordered_data$period <- rep("N", nrow(ordered_data))
+ordered_data$period[ordered_data$HOUR_ORDER < '12:00'] <- "D"
+
+# Separate the products time series, regardless the payment type and the competitors
+P1.data   <- subset(ordered_data, ordered_data$PROD_ID == "P1")
+P1.data.D <- subset(P1.data, P1.data$period == "D")
+P1.data.N <- subset(P1.data, P1.data$period == "N")
+
+P2.data   <- subset(ordered_data, ordered_data$PROD_ID == "P2")
+P2.data.D <- subset(P2.data, P2.data$period == "D")
+P2.data.N <- subset(P2.data, P2.data$period == "N")
+
+P3.data   <- subset(ordered_data, ordered_data$PROD_ID == "P3")
+P3.data.D <- subset(P3.data, P3.data$period == "D")
+P3.data.N <- subset(P3.data, P3.data$period == "N")
+
+P4.data   <- subset(ordered_data, ordered_data$PROD_ID == "P4")
+P4.data.D <- subset(P4.data, P4.data$period == "D")
+P4.data.N <- subset(P4.data, P4.data$period == "N")
+
+P5.data   <- subset(ordered_data, ordered_data$PROD_ID == "P5")
+P5.data.D <- subset(P5.data, P5.data$period == "D")
+P5.data.N <- subset(P5.data, P5.data$period == "N")
+
+P6.data   <- subset(ordered_data, ordered_data$PROD_ID == "P6")
+P6.data.D <- subset(P6.data, P6.data$period == "D")
+P6.data.N <- subset(P6.data, P6.data$period == "N")
+
+P7.data   <- subset(ordered_data, ordered_data$PROD_ID == "P7")
+P7.data.D <- subset(P7.data, P7.data$period == "D")
+P7.data.N <- subset(P7.data, P7.data$period == "N")
+
+P8.data   <- subset(ordered_data, ordered_data$PROD_ID == "P8")
+P8.data.D <- subset(P8.data, P8.data$period == "D")
+P8.data.N <- subset(P8.data, P8.data$period == "N")
+
+P9.data   <- subset(ordered_data, ordered_data$PROD_ID == "P9")
+P9.data.D <- subset(P9.data, P9.data$period == "D")
+P9.data.N <- subset(P9.data, P9.data$period == "N")
+
+##################################################
+# Forecasting Procedure
+##################################################
+
+# Data preparation to forecasting procedure
+
+                Y1 <- ts(P1.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P1.data.N$COMPETITOR_PRICE)
+                P1 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P1 <- nnetar(P1, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P1 <- forecast(fit.nnetar.P1, PI = TRUE, h = 30)
+
+                Y1 <- ts(P2.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P2.data.N$COMPETITOR_PRICE)
+                P2 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P2 <- nnetar(P2, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P2 <- forecast(fit.nnetar.P2, PI = TRUE, h = 30)
+
+                Y1 <- ts(P3.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P3.data.N$COMPETITOR_PRICE)
+                P3 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P3 <- nnetar(P3, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P3 <- forecast(fit.nnetar.P3, PI = TRUE, h = 30)
+
+                Y1 <- ts(P4.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P4.data.N$COMPETITOR_PRICE)
+                P4 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P4 <- nnetar(P4, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P4 <- forecast(fit.nnetar.P4, PI = TRUE, h = 30)
+
+                Y1 <- ts(P5.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P5.data.N$COMPETITOR_PRICE)
+                P5 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P5 <- nnetar(P5, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P5 <- forecast(fit.nnetar.P5, PI = TRUE, h = 30)
+
+                Y1 <- ts(P6.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P6.data.N$COMPETITOR_PRICE)
+                P6 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P6 <- nnetar(P6, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P6 <- forecast(fit.nnetar.P6, PI = TRUE, h = 30)
+
+                Y1 <- ts(P7.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P7.data.N$COMPETITOR_PRICE)
+                P7 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P7 <- nnetar(P7, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P7 <- forecast(fit.nnetar.P7, PI = TRUE, h = 30)
+
+                Y1 <- ts(P8.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P8.data.N$COMPETITOR_PRICE)
+                P8 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P8 <- nnetar(P8, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P8 <- forecast(fit.nnetar.P8, PI = TRUE, h = 30)
+
+                Y1 <- ts(P9.data.D$COMPETITOR_PRICE)
+                Y2 <- ts(P9.data.N$COMPETITOR_PRICE)
+                P9 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
+     fit.nnetar.P9 <- nnetar(P9, 30, 0, 30, lambda = 0)
+   fcast.nnetar.P9 <- forecast(fit.nnetar.P9, PI = TRUE, h = 30)
+
+   #par(mfrow = c(3, 3))
+   p1 <- autoplot(fcast.nnetar.P1, include = 20) + ggtitle("")
+   p2 <- autoplot(fcast.nnetar.P2, include = 20) + ggtitle("")
+   p3 <- autoplot(fcast.nnetar.P3, include = 20) + ggtitle("")
+   p4 <- autoplot(fcast.nnetar.P4, include = 20) + ggtitle("")
+   p5 <- autoplot(fcast.nnetar.P5, include = 20) + ggtitle("")
+   p6 <- autoplot(fcast.nnetar.P6, include = 20) + ggtitle("")
+   p7 <- autoplot(fcast.nnetar.P7, include = 20) + ggtitle("")
+   p8 <- autoplot(fcast.nnetar.P8, include = 20) + ggtitle("")
+   p9 <- autoplot(fcast.nnetar.P9, include = 20) + ggtitle("")
+   grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, nrow = 3)
+```
+
+As in the previous section, we used NNETAR$models(p,k)$, with $p = k = 30$ so that it is able to capture dynamics such as possible mensal seazonality and nonlinear dynamics. Finally, in the following table it is shown an evaluation of the models given the standard deviations of its residues.
+
+\begin{center}
+  \begin{tabular}{ c | c }
+    Produto & NNETAR$(30,30)$                                \\ \hline\hline
+    $P_1$   & $\widehat{\sigma_{e}} = 1,\!01 \times 10^{-3}$ \\  
+    $P_2$   & $\widehat{\sigma_{e}} = 4,\!05 \times 10^{-3}$ \\
+    $P_3$   & $\widehat{\sigma_{e}} = 4,\!03 \times 10^{-3}$ \\
+    $P_4$   & $\widehat{\sigma_{e}} = 5,\!61 \times 10^{-3}$ \\
+    $P_5$   & $\widehat{\sigma_{e}} = 5,\!77 \times 10^{-4}$ \\
+    $P_6$   & $\widehat{\sigma_{e}} = 1,\!29 \times 10^{-2}$ \\
+    $P_7$   & $\widehat{\sigma_{e}} = 8,\!92 \times 10^{-3}$ \\
+    $P_8$   & $\widehat{\sigma_{e}} = 5,\!19 \times 10^{-3}$ \\
+    $P_9$   & $\widehat{\sigma_{e}} = 5,\!37 \times 10^{-3}$ \\
+  \end{tabular}
+\end{center}
+
+Therefore, by comparing the above table with the last table of the previous section it is possible to infer that all the models for the products of the database 'sales.csv' produced a better predictive model, since the standard deviations of the residuals were less than those of competitors.
+
+Therefore, the predictive power of the data provided for B2W are higher than for the competition.
+
+# References
+
+\begin{enumerate}
+  \item Hyndman, Rob J. and George Athanasopoulos. Forecasting: principles and practice. OTexts, 2018.
+\end{enumerate}
