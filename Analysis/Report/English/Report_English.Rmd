@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## B2W Challenge
 
-In this challenge two databases were considered: (a) 'sales.csv' and (b) 'comp_prices.csv'. In (a) there is transactional information of nine products $P_i, i = 1, \ cdots, 9$ for the year of 2015 and in (b), contains data from six competitors $C_i, i=1,\cdots,6$, monitored at different times, for the same dates and products of the data set.
+In this challenge two databases were considered: (a) 'sales.csv' and (b) 'comp_prices.csv'. In (a) there is transactional information of nine products $P_i, i = 1, \cdots, 9$ for the year of 2015 and in (b), contains data from six competitors $C_i, i=1,\cdots,6$, monitored at different times, for the same dates and products of the data set.
 
 At first, we will analyze 'sales.csv' and, in a second step, we will pay attention to 'comp_prices.csv', so that we can thus make a comparison between the transactional information and the prices of the competitors.
 
@@ -24,15 +24,15 @@ The below table shows the KPSS test results.
 \begin{center}
   \begin{tabular}{ c | c | c }
     Product ID & Test Statistic & $p$-value \\ \hline\hline
-    $P_1$      & $0.14$       & $ 0.07$ \\  
-    $P_2$      & $0.17$       & $ 0.02$ \\
-    $P_3$      & $0.53$       & $<0.01$ \\
-    $P_4$      & $0.04$       & $>0.10$ \\
-    $P_5$      & $0.26$       & $<0.01$ \\
-    $P_6$      & $0.08$       & $>0.10$ \\
-    $P_7$      & $0.42$       & $<0.01$ \\
-    $P_8$      & $0.09$       & $>0.10$ \\
-    $P_9$      & $0.06$       & $>0.10$ \\
+    $P_1$      & $0.14$         & $ 0.07$   \\  
+    $P_2$      & $0.17$         & $ 0.02$   \\
+    $P_3$      & $0.53$         & $<0.01$   \\
+    $P_4$      & $0.04$         & $>0.10$   \\
+    $P_5$      & $0.26$         & $<0.01$   \\
+    $P_6$      & $0.08$         & $>0.10$   \\
+    $P_7$      & $0.42$         & $<0.01$   \\
+    $P_8$      & $0.09$         & $>0.10$   \\
+    $P_9$      & $0.06$         & $>0.10$   \\
   \end{tabular}
 \end{center}
 
@@ -89,7 +89,7 @@ For all time series we use three prediction models: the linear autoregressive mo
 
 \begin{center}
   \begin{tabular}{ c | c | c | c }
-    Produto & ARIMA$(p,d,q)$                                  & ETS                                             & NNETAR$(p,k)$                                \\ \hline\hline
+    Product ID & ARIMA$(p,d,q)$                                  & ETS                                             & NNETAR$(p,k)$                                \\ \hline\hline
     $P_1$   & ARIMA$(1,1,1)$, $\widehat{\sigma_{e}} =  66.87$ & ETS$(M,N,N)$,   $\widehat{\sigma_{e}} =   0.04$ & NNETAR$(4,2)$, $\widehat{\sigma_{e}} = 0.04$ \\  
     $P_2$   & ARIMA$(0,1,2)$, $\widehat{\sigma_{e}} =  32.21$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  33.56$ & NNETAR$(7,4)$, $\widehat{\sigma_{e}} = 0.04$ \\
     $P_3$   & ARIMA$(2,1,3)$, $\widehat{\sigma_{e}} =  71.28$ & ETS$(A,N,N)$,   $\widehat{\sigma_{e}} =  72.13$ & NNETAR$(7,4)$, $\widehat{\sigma_{e}} = 0.05$ \\
@@ -108,7 +108,7 @@ where the model NNETAR$(p,k)$ can be written as follows,
 \[ x(n) = f \left( \sum_{r=1}^{p} \boldsymbol{\Phi}_{r} \mathbf{x}(n-r) \right) + e(n), \]
 in which, $\mathbf{x}(n-r)$ is a $k \times 1$ input vector, $\boldsymbol{\Phi}_{r}$ is a $k \times k$ of synaptic weights (parameter) matrix, $k$ is the number of network hidden layers, $f(\cdot)$ is the activation function (sigmoid) and $e(n)$ independent, identically, distributed process (i.i.d.) with null mean and variance $\sigma_{e}^{2}$ ($\{e(n)\}_{n \in \mathbb{Z}} \sim$ i.i.d.$(0, \sigma_e^2)$).
 
-However, previous candidate experience of manipulating annual data and NNETAR$(p,k)$ models indicates the necessity of a fine tuning procedure of the parameters $p$ and $k$ for the products $P_i, i = 1, \ cdots , 9$, such that the new models are capable of capturing the nonlinear dynamics of the processes and possible other effects treated below.
+However, previous candidate experience of manipulating annual data and NNETAR$(p,k)$ models indicates the necessity of a fine tuning procedure of the parameters $p$ and $k$ for the products $P_i, i = 1, \cdots , 9$, such that the new models are capable of capturing the nonlinear dynamics of the processes and possible other effects treated below.
 
 As we are dealing with daily data and despite the apparent lack of seasonality in the graphs of Figure \ref{fig:fig1}, the parameters $p = k = 30$ are imposed on the neural network, so that it is able to capture the monthly variation and the nature of the nonlinear dynamics of the data.
  
@@ -116,16 +116,16 @@ As a matter of fact, in the next table, note the decrease in value of \(\widehat
 
 \begin{center}
   \begin{tabular}{ c | c }
-    Produto & NNETAR$(30,30)$                                \\ \hline\hline
-    $P_1$   & $\widehat{\sigma_{e}} = 2.67 \times 10^{-5}$ \\  
-    $P_2$   & $\widehat{\sigma_{e}} = 4.74 \times 10^{-5}$ \\
-    $P_3$   & $\widehat{\sigma_{e}} = 7.59 \times 10^{-5}$ \\
-    $P_4$   & $\widehat{\sigma_{e}} = 1.54 \times 10^{-4}$ \\
-    $P_5$   & $\widehat{\sigma_{e}} = 1.00 \times 10^{-4}$ \\
-    $P_6$   & $\widehat{\sigma_{e}} = 9.82 \times 10^{-3}$ \\
-    $P_7$   & $\widehat{\sigma_{e}} = 2.95 \times 10^{-4}$ \\
-    $P_8$   & $\widehat{\sigma_{e}} = 7.28 \times 10^{-5}$ \\
-    $P_9$   & $\widehat{\sigma_{e}} = 8.26 \times 10^{-5}$ \\
+    Product ID & NNETAR$(30,30)$                              \\ \hline\hline
+    $P_1$      & $\widehat{\sigma_{e}} = 2.67 \times 10^{-5}$ \\  
+    $P_2$      & $\widehat{\sigma_{e}} = 4.74 \times 10^{-5}$ \\
+    $P_3$      & $\widehat{\sigma_{e}} = 7.59 \times 10^{-5}$ \\
+    $P_4$      & $\widehat{\sigma_{e}} = 1.54 \times 10^{-4}$ \\
+    $P_5$      & $\widehat{\sigma_{e}} = 1.00 \times 10^{-4}$ \\
+    $P_6$      & $\widehat{\sigma_{e}} = 9.82 \times 10^{-3}$ \\
+    $P_7$      & $\widehat{\sigma_{e}} = 2.95 \times 10^{-4}$ \\
+    $P_8$      & $\widehat{\sigma_{e}} = 7.28 \times 10^{-5}$ \\
+    $P_9$      & $\widehat{\sigma_{e}} = 8.26 \times 10^{-5}$ \\
   \end{tabular}
 \end{center}
 
@@ -149,39 +149,39 @@ Figure \ref{fig:fig2} illustrate the forecast produced by the NNETAR$(24,24)$ mo
  
                 P1 <- ts(P1.data$REVENUE)
      fit.nnetar.P1 <- nnetar(P1, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P1 <- forecast(fit.nnetar.P1, PI = TRUE, h = 30)
+   fcast.nnetar.P1 <- forecast(fit.nnetar.P1, npaths = 100, PI = TRUE, h = 30)
  
                 P2 <- ts(P2.data$REVENUE)
      fit.nnetar.P2 <- nnetar(P2, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P2 <- forecast(fit.nnetar.P2, PI = TRUE, h = 30)
+   fcast.nnetar.P2 <- forecast(fit.nnetar.P2, npaths = 100, PI = TRUE, h = 30)
  
                 P3 <- ts(P3.data$REVENUE)
      fit.nnetar.P3 <- nnetar(P3, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P3 <- forecast(fit.nnetar.P3, PI = TRUE, h = 30)
+   fcast.nnetar.P3 <- forecast(fit.nnetar.P3, npaths = 100, PI = TRUE, h = 30)
  
                 P4 <- ts(P4.data$REVENUE)
      fit.nnetar.P4 <- nnetar(P4, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P4 <- forecast(fit.nnetar.P4, PI = TRUE, h = 30)
+   fcast.nnetar.P4 <- forecast(fit.nnetar.P4, npaths = 100, PI = TRUE, h = 30)
  
                 P5 <- ts(P5.data$REVENUE)
      fit.nnetar.P5 <- nnetar(P5, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P5 <- forecast(fit.nnetar.P5, PI = TRUE, h = 30)
+   fcast.nnetar.P5 <- forecast(fit.nnetar.P5, npaths = 100, PI = TRUE, h = 30)
  
                 P6 <- ts(P6.data$REVENUE)
      fit.nnetar.P6 <- nnetar(P6, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P6 <- forecast(fit.nnetar.P6, PI = TRUE, h = 30)
+   fcast.nnetar.P6 <- forecast(fit.nnetar.P6, npaths = 100, PI = TRUE, h = 30)
  
                 P7 <- ts(P7.data$REVENUE)
      fit.nnetar.P7 <- nnetar(P7, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P7 <- forecast(fit.nnetar.P7, PI = TRUE, h = 30)
+   fcast.nnetar.P7 <- forecast(fit.nnetar.P7, npaths = 100, PI = TRUE, h = 30)
  
                 P8 <- ts(P8.data$REVENUE)
      fit.nnetar.P8 <- nnetar(P8, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P8 <- forecast(fit.nnetar.P8, PI = TRUE, h = 30)
+   fcast.nnetar.P8 <- forecast(fit.nnetar.P8, npaths = 100, PI = TRUE, h = 30)
  
                 P9 <- ts(P9.data$REVENUE)
      fit.nnetar.P9 <- nnetar(P9, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P9 <- forecast(fit.nnetar.P9, PI = TRUE, h = 30)
+   fcast.nnetar.P9 <- forecast(fit.nnetar.P9, npaths = 100, PI = TRUE, h = 30)
  
    #par(mfrow = c(3, 3))
    p1 <- autoplot(fcast.nnetar.P1, include = 20) + ggtitle("")
@@ -349,7 +349,7 @@ plot.ts(C6.data.N$COMPETITOR_PRICE, ylim = c( 510, 2800), xlim = c(0, length(C6.
 
 ```
 
-Noticed that Figure \ref{fig:fig4} shows no differentiation between the diurnal and nocturnal, for all competitors.Therefore, henceforth no distinction will be made between these variables (that is, $C_i, i = 1, \ cdots, 6$).
+Notice that Figure \ref{fig:fig4} shows no differentiation between the diurnal and nocturnal, for all competitors.Therefore, henceforth no distinction will be made between these variables (that is, $C_i, i = 1, \cdots, 6$).
 
 Next, Figure \ref{fig:fig4} shows the time series of clustered data by product id, date and time and then take the mean value of the prices, regardless the competitors.
 
@@ -545,63 +545,63 @@ P9.data.N <- subset(P9.data, P9.data$period == "N")
                 P1 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                #P1 <- P1[1 : (length(P1) - 1)]
      fit.nnetar.P1 <- nnetar(P1, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P1 <- forecast(fit.nnetar.P1, PI = TRUE, h = 30)
+   fcast.nnetar.P1 <- forecast(fit.nnetar.P1, npaths = 100, PI = TRUE, h = 30)
 
                 Y1 <- ts(P2.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P2.data.N$COMPETITOR_PRICE)
                 P2 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                 #P2 <- P2[1 : (length(P2) - 1)]
      fit.nnetar.P2 <- nnetar(P2, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P2 <- forecast(fit.nnetar.P2, PI = TRUE, h = 30)
+   fcast.nnetar.P2 <- forecast(fit.nnetar.P2, npaths = 100, PI = TRUE, h = 30)
 
                 Y1 <- ts(P3.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P3.data.N$COMPETITOR_PRICE)
                 P3 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                 #P3 <- P3[1 : (length(P3) - 1)]
      fit.nnetar.P3 <- nnetar(P3, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P3 <- forecast(fit.nnetar.P3, PI = TRUE, h = 30)
+   fcast.nnetar.P3 <- forecast(fit.nnetar.P3, npaths = 100, PI = TRUE, h = 30)
 
                 Y1 <- ts(P4.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P4.data.N$COMPETITOR_PRICE)
                 P4 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                 P4 <- P4[1 : (length(P4) - 1)]
      fit.nnetar.P4 <- nnetar(P4, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P4 <- forecast(fit.nnetar.P4, PI = TRUE, h = 30)
+   fcast.nnetar.P4 <- forecast(fit.nnetar.P4, npaths = 100, PI = TRUE, h = 30)
 
                 Y1 <- ts(P5.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P5.data.N$COMPETITOR_PRICE)
                 P5 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                 P5 <- P5[1 : (length(P5) - 1)]
      fit.nnetar.P5 <- nnetar(P5, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P5 <- forecast(fit.nnetar.P5, PI = TRUE, h = 30)
+   fcast.nnetar.P5 <- forecast(fit.nnetar.P5, npaths = 100, PI = TRUE, h = 30)
 
                 Y1 <- ts(P6.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P6.data.N$COMPETITOR_PRICE)
                 P6 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                 P6 <- P6[1 : (length(P6) - 1)]
      fit.nnetar.P6 <- nnetar(P6, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P6 <- forecast(fit.nnetar.P6, PI = TRUE, h = 30)
+   fcast.nnetar.P6 <- forecast(fit.nnetar.P6, npaths = 100, PI = TRUE, h = 30)
 
                 Y1 <- ts(P7.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P7.data.N$COMPETITOR_PRICE)
                 P7 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                 P7 <- P7[1 : (length(P7) - 1)]
      fit.nnetar.P7 <- nnetar(P7, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P7 <- forecast(fit.nnetar.P7, PI = TRUE, h = 30)
+   fcast.nnetar.P7 <- forecast(fit.nnetar.P7, npaths = 100, PI = TRUE, h = 30)
 
                 Y1 <- ts(P8.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P8.data.N$COMPETITOR_PRICE)
                 P8 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                 P8 <- P8[1 : (length(P8) - 1)]
      fit.nnetar.P8 <- nnetar(P8, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P8 <- forecast(fit.nnetar.P8, PI = TRUE, h = 30)
+   fcast.nnetar.P8 <- forecast(fit.nnetar.P8, npaths = 100, PI = TRUE, h = 30)
 
                 Y1 <- ts(P9.data.D$COMPETITOR_PRICE)
                 Y2 <- ts(P9.data.N$COMPETITOR_PRICE)
                 P9 <- cbind(Y1, Y2) %>% rowMeans() %>% na.omit() %>% ts()
                 P9 <- P9[1 : (length(P9) - 1)]
      fit.nnetar.P9 <- nnetar(P9, 30, 0, 30, lambda = 0)
-   fcast.nnetar.P9 <- forecast(fit.nnetar.P9, PI = TRUE, h = 30)
+   fcast.nnetar.P9 <- forecast(fit.nnetar.P9, npaths = 100, PI = TRUE, h = 30)
 
    #par(mfrow = c(3, 3))
    p1 <- autoplot(fcast.nnetar.P1, include = 20) + ggtitle("")
@@ -616,20 +616,20 @@ P9.data.N <- subset(P9.data, P9.data$period == "N")
    grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, nrow = 3)
 ```
 
-As in the previous section, we used NNETAR$models(p,k)$, with $p = k = 30$ so that it is able to capture dynamics such as possible mensal seazonality and nonlinear dynamics. Finally, in the following table it is shown an evaluation of the models given the standard deviations of its residues.
+As in the previous section, we used NNETAR$(p,k)$ models, with $p = k = 30$ so that it is able to capture dynamics such as possible mensal seazonality and nonlinear dynamics. Finally, in the following table it is shown an evaluation of the models given the standard deviations of its residues.
 
 \begin{center}
   \begin{tabular}{ c | c }
-    Produto & NNETAR$(30,30)$                                \\ \hline\hline
-    $P_1$   & $\widehat{\sigma_{e}} = 1.01 \times 10^{-3}$ \\  
-    $P_2$   & $\widehat{\sigma_{e}} = 4.05 \times 10^{-3}$ \\
-    $P_3$   & $\widehat{\sigma_{e}} = 4.03 \times 10^{-3}$ \\
-    $P_4$   & $\widehat{\sigma_{e}} = 5.61 \times 10^{-3}$ \\
-    $P_5$   & $\widehat{\sigma_{e}} = 5.77 \times 10^{-4}$ \\
-    $P_6$   & $\widehat{\sigma_{e}} = 1.29 \times 10^{-2}$ \\
-    $P_7$   & $\widehat{\sigma_{e}} = 8.92 \times 10^{-3}$ \\
-    $P_8$   & $\widehat{\sigma_{e}} = 5.19 \times 10^{-3}$ \\
-    $P_9$   & $\widehat{\sigma_{e}} = 5.37 \times 10^{-3}$ \\
+    Product ID & NNETAR$(30,30)$                              \\ \hline\hline
+    $P_1$      & $\widehat{\sigma_{e}} = 1.01 \times 10^{-3}$ \\  
+    $P_2$      & $\widehat{\sigma_{e}} = 4.05 \times 10^{-3}$ \\
+    $P_3$      & $\widehat{\sigma_{e}} = 4.03 \times 10^{-3}$ \\
+    $P_4$      & $\widehat{\sigma_{e}} = 5.61 \times 10^{-3}$ \\
+    $P_5$      & $\widehat{\sigma_{e}} = 5.77 \times 10^{-4}$ \\
+    $P_6$      & $\widehat{\sigma_{e}} = 1.29 \times 10^{-2}$ \\
+    $P_7$      & $\widehat{\sigma_{e}} = 8.92 \times 10^{-3}$ \\
+    $P_8$      & $\widehat{\sigma_{e}} = 5.19 \times 10^{-3}$ \\
+    $P_9$      & $\widehat{\sigma_{e}} = 5.37 \times 10^{-3}$ \\
   \end{tabular}
 \end{center}
 
